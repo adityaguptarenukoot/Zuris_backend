@@ -10,7 +10,7 @@ const PORT = 4000;
 // connectDB();
 
 
-const allowedOrigins = ["http://localhost:4000", "https://zuris-backend.onrender.com"];
+const allowedOrigins = ["http://localhost:4000", "https://zuris-frontend.vercel.app"];
 
 app.use(cors({
   origin: function (origin, callback) {
