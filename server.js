@@ -1,5 +1,4 @@
 import express from 'express';
-import connectDB from './config/connectDB.js';
 import 'dotenv/config';
 import cors from 'cors'
 import formRouter from './routes/form.route.js';
@@ -7,9 +6,28 @@ import formRouter from './routes/form.route.js';
 const app = express();
 const PORT = 4000;
 
-// connectDB();
-const path = process.env.NODE_ENV === 'production' ? process.env.CLIENT_URL : "http://localhost:3000";
-app.use(cors({ origin: path, credentials: true }));
+
+const allowedOrigins = [
+  'http://localhost:3000',              
+  'https://zuris-frontend.vercel.app',  
+  'https://zurix.co.in',               
+  'http://zurix.co.in',                
+  'https://www.zurix.co.in'             
+];
+
+app.use(cors({
+  origin: function(origin, callback) {
+    
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) === -1) {
+      const msg = 'CORS policy does not allow access from this origin.';
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
+  },
+  credentials: true
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
