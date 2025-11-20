@@ -1,11 +1,13 @@
 import nodemailer from "nodemailer";
 
-// Create the transporter using Gmail service and environment variables for credentials
+// ✅ Use Hostinger SMTP instead of Gmail!
 export const transporter = nodemailer.createTransport({
-  service: "gmail",
+  host: process.env.EMAIL_HOST || "smtp.hostinger.com",
+  port: Number(process.env.EMAIL_PORT) || 465,
+  secure: process.env.EMAIL_SECURE === "true", // true for 465
   auth: {
-    user: process.env.EMAIL_USER, // Admin email (sender)
-    pass: process.env.EMAIL_PASS, // Admin email password or app password
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
   },
 });
 
@@ -19,7 +21,6 @@ export const sendMailAdmin = async (
   project_details,
   phoneNumber
 ) => {
-  // Create the HTML email body with user details
   const html = `
     <!DOCTYPE html>
     <html>
@@ -53,10 +54,9 @@ export const sendMailAdmin = async (
     </html>
   `;
 
-  // Mail options - sending to admin email (your email)
   const mailOptions = {
-    from: process.env.EMAIL_USER, // sender address (admin)
-    to: process.env.EMAIL_USER, // recipient address (admin)
+    from: process.env.EMAIL_USER,
+    to: process.env.EMAIL_USER, // send it to your own admin email
     subject,
     html,
   };
@@ -65,6 +65,6 @@ export const sendMailAdmin = async (
     await transporter.sendMail(mailOptions);
     console.log("Email sent successfully");
   } catch (error) {
-    console.error("Error sending email:", error);
+    console.error("Error sending email:", error.message);
   }
 };
