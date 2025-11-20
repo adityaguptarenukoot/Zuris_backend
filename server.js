@@ -10,9 +10,10 @@ const PORT = 4000;
 const allowedOrigins = [
   'http://localhost:3000',              
   'https://zuris-frontend.vercel.app',  
-  'https://zurix.co.in',               
-  'http://zurix.co.in',                
-  'https://www.zurix.co.in'             
+  'https://viconai.com',               
+  'http://viconai.com',                
+  'https://www.viconai.com',               
+  'http://www.viconai.com'             
 ];
 
 app.use(cors({
