@@ -1,10 +1,8 @@
-import { Router } from "express";
-import { formSubmit } from "../controllers/form.controller.js";
+import express from 'express';
+import { submitForm } from '../controllers/form.controller.js';
 
+const router = express.Router();
 
-const formRouter = Router();
+router.post('/submit', submitForm);
 
-formRouter.post("/submit", formSubmit);
-
-
-export default formRouter;
+export default router;

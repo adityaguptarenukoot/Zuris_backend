@@ -1,6 +1,6 @@
 import nodemailer from "nodemailer";
 
-// ✅ Use Hostinger SMTP instead of Gmail!
+
 export const transporter = nodemailer.createTransport({
   host: process.env.EMAIL_HOST || "smtp.hostinger.com",
   port: Number(process.env.EMAIL_PORT) || 465,
