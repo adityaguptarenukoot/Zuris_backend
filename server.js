@@ -1,89 +1,114 @@
-// import express from 'express';
-// import cors from 'cors';
-// import dotenv from 'dotenv';
-// import formRoutes from './routes/formRoutes.js';
+import express from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import formRoutes from './routes/formRoutes.js';
 
-// // Load environment variables
-// dotenv.config();
+// Load environment variables
+dotenv.config();
 
-// // Initialize Express app
-// const app = express();
+// Initialize Express app
+const app = express();
 
-// // Middleware
-// app.use(cors({
-//   origin: process.env.FRONTEND_URL || 'http://localhost:3000',
-//   credentials: true
-// }));
-// app.use(express.json());
-// app.use(express.urlencoded({ extended: true }));
+// CORS Configuration for multiple domains
+const allowedOrigins = [
+  'https://viconai.com',
+  'https://www.viconai.com',
+  'https://zuris-frontend.vercel.app',
+  'http://localhost:3000',
+  'http://localhost:5173'
+];
 
-// // Routes
-// app.use('/api/form', formRoutes);
+app.use(cors({
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true
+}));
 
-// // Health check route
-// app.get('/health', (req, res) => {
-//   res.status(200).json({ 
-//     success: true, 
-//     message: 'ViconAI Backend Server is running!',
-//     timestamp: new Date().toISOString()
-//   });
-// });
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-// // Root route
-// app.get('/', (req, res) => {
-//   res.json({
-//     success: true,
-//     message: 'Welcome to ViconAI Backend API',
-//     endpoints: {
-//       health: '/health',
-//       submitForm: 'POST /api/form/submit'
-//     }
-//   });
-// });
+// Routes
+app.use('/api/form', formRoutes);
 
-// // 404 handler
-// app.use((req, res) => {
-//   res.status(404).json({
-//     success: false,
-//     message: 'Route not found'
-//   });
-// });
+// Health check route
+app.get('/health', (req, res) => {
+  res.status(200).json({ 
+    success: true, 
+    message: 'ViconAI Backend Server is running!',
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development'
+  });
+});
 
-// // Error handling middleware
-// app.use((err, req, res, next) => {
-//   console.error('Server Error:', err);
-//   res.status(500).json({
-//     success: false,
-//     message: 'Internal server error',
-//     error: process.env.NODE_ENV === 'development' ? err.message : undefined
-//   });
-// });
+// Root route
+app.get('/', (req, res) => {
+  res.json({
+    success: true,
+    message: 'Welcome to ViconAI Backend API',
+    endpoints: {
+      health: 'GET /health',
+      submitForm: 'POST /api/form/submit'
+    }
+  });
+});
 
-// // Start server
-// const PORT = process.env.PORT || 5000;
-// const server = app.listen(PORT, () => {
-//   console.log(`\n🚀 ViconAI Backend Server running on port ${PORT}`);
-//   console.log(`📧 Email service: ${process.env.SMTP_HOST}`);
-//   console.log(`🌐 Environment: ${process.env.NODE_ENV || 'development'}`);
-//   console.log(`\n✅ Server is ready to accept requests`);
- 
-// });
+// 404 handler
+app.use((req, res) => {
+  res.status(404).json({
+    success: false,
+    message: 'Route not found'
+  });
+});
 
-// // Handle server errors
-// server.on('error', (error) => {
-//   if (error.code === 'EADDRINUSE') {
-//     console.error(`❌ Port ${PORT} is already in use`);
-//     process.exit(1);
-//   } else {
-//     console.error('❌ Server error:', error);
-//   }
-// });
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error('Server Error:', err);
+  res.status(500).json({
+    success: false,
+    message: 'Internal server error',
+    error: process.env.NODE_ENV === 'development' ? err.message : undefined
+  });
+});
 
-// // Graceful shutdown
-// process.on('SIGTERM', () => {
-//   console.log('👋 SIGTERM received, shutting down gracefully');
-//   server.close(() => {
-//     console.log('✅ Server closed');
-//     process.exit(0);
-//   });
-// });
+// Export for Vercel serverless
+export default app;
+
+// Start server for local development only
+if (process.env.NODE_ENV !== 'production') {
+  const PORT = process.env.PORT || 8000;
+  const server = app.listen(PORT, () => {
+    console.log(`\n🚀 ViconAI Backend Server running on port ${PORT}`);
+    console.log(`📧 Email service: ${process.env.SMTP_HOST}`);
+    console.log(`🌐 Environment: ${process.env.NODE_ENV || 'development'}`);
+    console.log(`\n✅ Server is ready to accept requests`);
+    console.log(`   Health: http://localhost:${PORT}/health`);
+    console.log(`   API: http://localhost:${PORT}/api/form/submit\n`);
+  });
+
+  // Handle server errors
+  server.on('error', (error) => {
+    if (error.code === 'EADDRINUSE') {
+      console.error(`❌ Port ${PORT} is already in use`);
+      process.exit(1);
+    } else {
+      console.error('❌ Server error:', error);
+    }
+  });
+
+  // Graceful shutdown
+  process.on('SIGTERM', () => {
+    console.log('👋 SIGTERM received, shutting down gracefully');
+    server.close(() => {
+      console.log('✅ Server closed');
+      process.exit(0);
+    });
+  });
+}
