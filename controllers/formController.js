@@ -1,6 +1,7 @@
 import createTransporter from '../config/emailConfig.js';
 import userConfirmationTemplate from '../templates/userConfirmation.js';
 import adminNotificationTemplate from '../templates/adminNotification.js';
+import sql from '../config/dbConfig.js';
 
 export const submitForm = async (req, res) => {
   try {
@@ -21,7 +22,27 @@ export const submitForm = async (req, res) => {
         success: false,
         message: 'Please provide a valid email address'
       });
-    }
+    };
+
+     await sql`
+      INSERT INTO form_data (
+        fullname,
+        email,
+        company,
+        service,
+        project_details,
+        phone_number
+      ) VALUES (
+        ${fullname},
+        ${email},
+        ${company},
+        ${service},
+        ${project_details},
+        ${phoneNumber}
+      );
+    `;
+
+    console.log({data})
 
     const transporter = createTransporter();
 
@@ -62,7 +83,7 @@ export const submitForm = async (req, res) => {
     // Success response
     return res.status(200).json({
       success: true,
-      message: 'Form submitted successfully! Check your email for confirmation.'
+      message: 'Form submitted successfully! Check your email for confirmation.',
     });
 
   } catch (error) {

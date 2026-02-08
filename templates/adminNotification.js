@@ -3,7 +3,7 @@ const adminNotificationTemplate = (data) => {
   const timestamp = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
 
   return {
-    subject: `🚀 New Lead: ${fullname} from ${company}`,
+    subject: ` New Lead: ${fullname} from ${company}`,
     text: `New Contact Form Submission
 ━━━━━━━━━━━━━━━━━━━━━━━━━━
 

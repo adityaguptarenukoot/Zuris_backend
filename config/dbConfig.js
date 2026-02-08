@@ -1,19 +1,22 @@
-import pkg from "pg";
-import dotenv from "dotenv";
+// import pkg from "pg";
+// import 'dotenv/config';
+import { neon } from "@neondatabase/serverless";
 
-dotenv.config();
+// const { Pool } = pkg;
 
-const { Pool } = pkg;
+// const pool = new Pool({
+//   host: process.env.DB_HOST,
+//   user: process.env.DB_USER,
+//   password: process.env.DB_PASSWORD,
+//   database: process.env.DB_NAME,
+//   port: process.env.DB_PORT,
+//   ssl: {
+//     rejectUnauthorized: false, 
+//   },
+// });
 
-const pool = new Pool({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-  port: process.env.DB_PORT,
-  ssl: {
-    rejectUnauthorized: false, 
-  },
-});
+// export default pool;
 
-export default pool;
+const sql = neon(process.env.NEON_DB_URL);
+
+export default sql;
