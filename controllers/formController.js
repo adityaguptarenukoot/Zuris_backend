@@ -42,7 +42,6 @@ export const submitForm = async (req, res) => {
       );
     `;
 
-    console.log({data})
 
     const transporter = createTransporter();
 
