@@ -91,8 +91,8 @@ export const submitForm = async (req, res) => {
 
     return res.status(500).json({
       success: false,
-      message: 'Failed to send email. Please try again later.',
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      message: `Failed to send email. Please try again later.`,
+      error: error.message
     });
   }
 };
